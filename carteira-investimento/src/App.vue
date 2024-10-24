@@ -37,7 +37,7 @@ export default {
   methods: {
     ...mapActions(['addAtivo', 'updateAtivo', 'deleteAtivo']),
     handleFormSubmit(ativo) {
-      console.log(ativo);
+      /* console.log(ativo); */
       if (this.isEditing) {
         this.updateAtivo(ativo);
       } else {

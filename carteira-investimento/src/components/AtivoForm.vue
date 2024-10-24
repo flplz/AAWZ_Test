@@ -15,6 +15,7 @@
           <label for="valor">Valor Investido</label>
           <input v-model="ativo.valor" type="number" id="valor" required />
         </div>
+        <!-- UMA SAIDA PARA O SUBMIT DUPLO SERIA FAZER O ONCLICK-->
         <button type="submit">{{ isEditing ? "Salvar" : "Adicionar" }}</button>
       </form>
     </div>
@@ -29,7 +30,9 @@
       };
     },
     methods: {
-      submitForm() {
+      submitForm(event) {
+        event.preventDefault();
+        event.stopPropagation();
         this.$emit('submit', this.ativo);
         //Resetar o form após a submissão
         this.ativo = { nome: '', tipo: '', valor: 0 };
