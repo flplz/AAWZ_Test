@@ -31,6 +31,8 @@
     methods: {
       submitForm() {
         this.$emit('submit', this.ativo);
+        //Resetar o form após a submissão
+        this.ativo = { nome: '', tipo: '', valor: 0 };
       }
     }
   };

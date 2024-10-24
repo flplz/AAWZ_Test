@@ -1,4 +1,6 @@
 import { createStore } from 'vuex';
+import { v4 as uuidv4 } from 'uuid';
+
 
 export default createStore({
   state: {
@@ -6,9 +8,9 @@ export default createStore({
   },
   mutations: {
     // Adiciona um novo ativo
+
     ADD_ATIVO(state, ativo) {
-      // Adiciona um id único a cada ativo
-      ativo.id = Date.now();
+      ativo.id = uuidv4(); //Utilizado uuid para gerar ID único
       state.ativos.push(ativo);
     },
     // Edita um ativo existente
