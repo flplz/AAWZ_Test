@@ -1,62 +1,62 @@
-<!-- src/App.vue -->
 <template>
   <div id="app">
-    <AtivoForm
-      :isEditing="isEditing"
-      :initialAtivo="editingAtivo"
-      @submit="handleFormSubmit"
-    />
-    <AtivoList
-      :ativos="ativos"
-      @edit="handleEdit"
-      @delete="handleDelete"
-    />
-    <h3>Total Investido: {{ totalInvestido }}</h3>
+    <nav>
+      <div class="logo-container">
+        <img src="@/assets/aawz-logo.png" alt="AAWZ Logo" class="logo">
+      </div>
+      <div class="nav-links">
+        <router-link to="/" class="nav-link">Home</router-link>
+        <router-link to="/adicionar" class="nav-link">Adicionar Ativo</router-link>
+        <router-link to="/sumario" class="nav-link">Sumário de Ativos</router-link>
+      </div>
+    </nav>
+
+    <router-view />
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import AtivoForm from './components/AtivoForm.vue';
-import AtivoList from './components/AtivoList.vue';
-
 export default {
-  components: {
-    AtivoForm,
-    AtivoList
-  },
-  data() {
-    return {
-      isEditing: false,
-      editingAtivo: null
-    };
-  },
-  computed: {
-    ...mapGetters(['ativos', 'totalInvestido'])
-  },
-  methods: {
-    ...mapActions(['addAtivo', 'updateAtivo', 'deleteAtivo']),
-    handleFormSubmit(ativo) {
-      /* console.log(ativo); */
-      if (this.isEditing) {
-        this.updateAtivo(ativo);
-      } else {
-        this.addAtivo(ativo);
-      }
-      this.isEditing = false;
-      this.editingAtivo = null;
-    },
-    handleEdit(ativo) {
-      this.isEditing = true;
-      this.editingAtivo = { ...ativo };
-    },
-    handleDelete(id) {
-      this.deleteAtivo(id);
-    }
-  }
+  name: 'App'
 };
 </script>
 
-<style>
-/* Adicione estilos conforme preferir */
+<style scoped>
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #333;
+  padding: 10px 20px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  max-height: 40px;
+  margin-right: 10px;
+}
+
+.nav-links {
+  display: flex;
+}
+
+.nav-link {
+  color: #fff;
+  padding: 10px 15px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  border-radius: 4px;
+}
+
+.nav-link:hover {
+  background-color: #555;
+}
+
+.nav-link.router-link-exact-active {
+  background-color: #6a886e;
+}
 </style>

@@ -1,0 +1,70 @@
+/* src/assets/style.css */
+body {
+  background-color: #0f0f0f;
+  color: white;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.form-section, .list-section {
+  margin: 0 20px;
+}
+
+.form-section {
+  flex: 1;
+}
+
+.list-section {
+  flex: 2;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input {
+  margin-bottom: 10px;
+  padding: 8px;
+}
+
+button {
+  padding: 8px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid white;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #333;
+  color: white;
+}
+
+td {
+  background-color: #444;
+  color: white;
+}

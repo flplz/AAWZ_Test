@@ -1,0 +1,44 @@
+.home-page {
+    text-align: center;
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0f0f0f;
+  }
+  
+  .content-container {
+    position: relative;
+    padding: 30px;
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+    background-color: #6a886e;
+  }
+  
+  .content-bg {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    width: 100%;
+    height: 100%;
+    background-color: #6a886e;
+    z-index: -1;
+    border-radius: 10px;
+  }
+  
+  h1 {
+    font-size: 36px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    margin-bottom: 10px;
+  }
+  
+  p {
+    font-size: 18px;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
