@@ -10,10 +10,12 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
+    "chart.js": "^4.4.5",
     "mitt": "^3.0.1",
     "pinia": "^2.2.4",
     "uuid": "^10.0.0",
     "vue": "^3.5.12",
+    "vue-chartjs": "^5.3.1",
     "vue-router": "^4.4.5",
     "vuex": "^4.0.2"
   },

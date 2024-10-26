@@ -31,12 +31,13 @@
               {{ ativo.tipo }}
             </div>
             <div v-else>
-              <input
-                v-model="ativoAtualizado.tipo"
-                type="text"
-                class="form-control"
-                placeholder="Tipo" 
-              />
+              <select v-model="ativoAtualizado.tipo" class="form-control">
+                <option disabled value="">Selecione um tipo</option>
+                <option value="Ação">Ação</option>
+                <option value="Criptomoeda">Criptomoeda</option>
+                <option value="Fundo Imobiliário">Fundo Imobiliário</option>
+                <option value="Renda Fixa">Renda Fixa</option>
+              </select>
             </div>
           </td>
           <td>
@@ -67,10 +68,22 @@
         </tr>
       </tbody>
     </table>
-
-    <!-- Exibição do Total Investido -->
-    <div class="total-investido">
-      <h3 class="section-title">Total Investido: {{ formatCurrency(totalInvestido) }}</h3>
+    <div class="total-and-chart">
+      <div class="total-investido">
+        <h3 class="section-title">Total Investido</h3>
+        <div class="filter">
+          <label for="tipo">Filtrar por Tipo:</label>
+          <select v-model="tipoSelecionado" @change="calcularTotalPorTipo" id="tipo">
+            <option value="">Todos</option>
+            <option value="Ação">Ação</option>
+            <option value="Criptomoeda">Criptomoeda</option>
+            <option value="Fundo Imobiliário">Fundo Imobiliário</option>
+            <option value="Renda Fixa">Renda Fixa</option>
+          </select>
+        </div>
+        <p>Total para "{{ tipoSelecionado || 'Todos' }}": {{ formatCurrency(totalPorTipo) }}</p>
+      </div>
+      <InvestimentoChart  ref= "chart" :ativos="ativos" />
     </div>
   </div>
 </template>
@@ -78,23 +91,37 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import emitter from '@/utils/eventBus';
+import InvestimentoChart from '@/components/InvestimentoChart.vue';
 
 export default {
+  components: {
+    InvestimentoChart
+  },
   data() {
     return {
-      isEditing: false, // Controle de exibição do formulário de edição
+      isEditing: false,
       ativoAtualizado: {
         id: null,
         nome: '',
         tipo: '',
         valor: 0
-      }
+      },
+      tipoSelecionado: '',
     };
   },
   computed: {
-    ...mapGetters(['getAtivos', 'totalInvestido']),
+    ...mapGetters(['getAtivos']),
     ativos() {
       return this.getAtivos;
+    },
+    totalPorTipo() {
+      if (this.tipoSelecionado) {
+        return this.ativos
+          .filter(ativo => ativo.tipo === this.tipoSelecionado)
+          .reduce((total, ativo) => total + ativo.valor, 0);
+      } else {
+        return this.ativos.reduce((total, ativo) => total + ativo.valor, 0);
+      }
     }
   },
   methods: {
@@ -103,10 +130,9 @@ export default {
       return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     },
 
-    // Função para começar a editar um ativo
     startEditing(ativo) {
       this.isEditing = true;
-      this.ativoAtualizado = { ...ativo }; // Clonar o ativo selecionado para editar
+      this.ativoAtualizado = { ...ativo };
     },
 
     // Função para salvar as mudanças
@@ -116,33 +142,34 @@ export default {
           id: this.ativoAtualizado.id,
           ativoAtualizado: { ...this.ativoAtualizado }
         });
-        this.isEditing = false; // Fechar o formulário após salvar
-        this.ativoAtualizado = { id: null, nome: '', tipo: '', valor: 0 }; // Resetar o objeto
+        
+        this.isEditing = false;
+        this.ativoAtualizado = { id: null, nome: '', tipo: '', valor: 0 };
+        emitter.emit('ativoAtualizado'); // Emite o evento de atualização de ativo
       }
     },
 
+
     // Função para cancelar a edição
     cancelEdit() {
-      this.isEditing = false; // Apenas fecha o formulário
-      this.ativoAtualizado = { id: null, nome: '', tipo: '', valor: 0 }; // Resetar o objeto
+      this.isEditing = false;
+      this.ativoAtualizado = { id: null, nome: '', tipo: '', valor: 0 };
     },
 
     // Função de confirmação de exclusão
     confirmDelete(id) {
       if (confirm("Tem certeza que deseja deletar este ativo?")) {
         this.deleteAtivo(id);
+        emitter.emit('ativoAtualizado'); // Emite o evento de atualização de ativo
       }
-    },
-
-    created() {
-      // Escuta o evento 'ativoAdicionado' emitido pelo AtivoForm
-      emitter.on('ativoAdicionado', this.onAtivoAdicionado);
-    },
-
-    beforeDestroy() {
-      // Limpa o event listener antes que o componente seja destruído
-      emitter.off('ativoAdicionado', this.onAtivoAdicionado);
     }
+  },
+  created() {
+    emitter.on('ativoAdicionado', this.onAtivoAdicionado);
+  },
+  
+  beforeUnmount() {
+    emitter.off('ativoAdicionado', this.onAtivoAdicionado);
   }
 };
 </script>
