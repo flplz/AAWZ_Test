@@ -21,7 +21,7 @@ Certifique-se de ter o **Node.js** e **npm** instalados em sua máquina.
 ### Instalação
 1. Clone o repositório:
    ```bash
-   git clone [<URL_DO_REPOSITORIO>](https://github.com/flplz/AAWZ_Test.git)
+   git clone https://github.com/flplz/AAWZ_Test.git
    cd carteira-investimento
 2. Instale as dependências:
    ```bash
