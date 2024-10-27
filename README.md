@@ -50,5 +50,5 @@ Certifique-se de ter o **Node.js** e **npm** instalados em sua máquina.
 - **Redirecionamento ao Clicar na Logo**: Implementar a funcionalidade para redirecionar o usuário à página "Home" ao clicar na logo.
 - **Testes Automatizados**: Adicionar testes para garantir a qualidade e a estabilidade da aplicação.
 
-##Autor
+## Autor
 - **Felipe Fagundes Pacheco**
