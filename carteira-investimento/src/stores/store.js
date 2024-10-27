@@ -56,3 +56,5 @@ export default createStore({
     }
   }
 });
+
+// Gerenciador de estados Vuex
