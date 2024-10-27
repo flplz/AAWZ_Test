@@ -1,4 +1,5 @@
 <!-- src/components/AtivoList.vue -->
+
 <template>
   <div class="ativo-list">
     <h2 class="section-title">Lista de Ativos</h2>
@@ -12,14 +13,17 @@
         </tr>
       </thead>
       <tbody>
+        <!-- Itera sobre a lista de ativos e cria uma linha para cada ativo -->
         <tr v-for="ativo in ativos" :key="ativo.id">
           <td>
+            <!-- Exibe o nome do ativo ou um campo de entrada para edição -->
             <div v-if="!isEditing || ativo.id !== ativoAtualizado.id">
               {{ ativo.nome }}
             </div>
             <div v-else>
+              <!-- Liga o campo de entrada ao modelo ativoAtualizado -->
               <input
-                v-model="ativoAtualizado.nome"
+                v-model="ativoAtualizado.nome" 
                 type="text"
                 class="form-control"
                 placeholder="Nome" 
@@ -27,6 +31,7 @@
             </div>
           </td>
           <td>
+            <!-- Exibe o tipo do ativo ou um seletor para edição -->
             <div v-if="!isEditing || ativo.id !== ativoAtualizado.id">
               {{ ativo.tipo }}
             </div>
@@ -41,21 +46,25 @@
             </div>
           </td>
           <td>
+            <!-- Exibe o valor do ativo formatado ou um campo de entrada para edição -->
             <div v-if="!isEditing || ativo.id !== ativoAtualizado.id">
               {{ formatCurrency(ativo.valor) }}
             </div>
             <div v-else>
+              <!-- Liga o campo de entrada ao modelo ativoAtualizado -->
               <input
-                v-model="ativoAtualizado.valor"
+                v-model="ativoAtualizado.valor" 
                 type="number"
-                min="0.01"
-                step="0.01"
+                min="1"
+                max="1000000"
+                step="1"
                 class="form-control"
                 placeholder="Valor Investido" 
               />
             </div>
           </td>
           <td>
+            <!-- Exibe botões de ação dependendo se está editando ou não -->
             <div v-if="!isEditing || ativo.id !== ativoAtualizado.id">
               <button class="btn btn-primary" @click="startEditing(ativo)">Editar</button>
               <button class="btn btn-danger" @click="confirmDelete(ativo.id)">Deletar</button>
@@ -81,9 +90,11 @@
             <option value="Renda Fixa">Renda Fixa</option>
           </select>
         </div>
+        <!-- Exibe o total investido filtrado por tipo -->
         <p>Total para "{{ tipoSelecionado || 'Todos' }}": {{ formatCurrency(totalPorTipo) }}</p>
       </div>
-      <InvestimentoChart  ref= "chart" :ativos="ativos" />
+      <!-- Componente de gráfico que exibe os investimentos -->
+      <InvestimentoChart ref="chart" :ativos="ativos" />
     </div>
   </div>
 </template>
@@ -95,81 +106,101 @@ import InvestimentoChart from '@/components/InvestimentoChart.vue';
 
 export default {
   components: {
-    InvestimentoChart
+    InvestimentoChart // Importa o componente de gráfico de investimentos
   },
   data() {
     return {
-      isEditing: false,
       ativoAtualizado: {
         id: null,
         nome: '',
         tipo: '',
         valor: 0
       },
-      tipoSelecionado: '',
+      ativoOriginal: null, // Nova propriedade para armazenar dados originais do ativo
+      tipoSelecionado: '', // Armazena o tipo de ativo selecionado para filtragem
+      isEditing: null, // Armazena o ID do ativo que está sendo editado
     };
   },
   computed: {
-    ...mapGetters(['getAtivos']),
+    ...mapGetters(['getAtivos']), // Mapeia getters do Vuex
     ativos() {
-      return this.getAtivos;
+      return this.getAtivos; // Retorna a lista de ativos do estado Vuex
     },
     totalPorTipo() {
+      // Calcula o total investido por tipo, se um tipo estiver selecionado
       if (this.tipoSelecionado) {
         return this.ativos
-          .filter(ativo => ativo.tipo === this.tipoSelecionado)
-          .reduce((total, ativo) => total + ativo.valor, 0);
+          .filter(ativo => ativo.tipo === this.tipoSelecionado) // Filtra ativos pelo tipo selecionado
+          .reduce((total, ativo) => total + ativo.valor, 0); // Soma os valores filtrados
       } else {
+        // Se nenhum tipo for selecionado, soma todos os valores
         return this.ativos.reduce((total, ativo) => total + ativo.valor, 0);
       }
     }
   },
   methods: {
-    ...mapActions(['editAtivo', 'deleteAtivo']),
+    ...mapActions(['editAtivo', 'deleteAtivo']), // Mapeia ações do Vuex para edição e exclusão de ativos
+    
     formatCurrency(value) {
+      // Formata o valor para o padrão monetário brasileiro
       return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     },
 
     startEditing(ativo) {
-      this.isEditing = true;
-      this.ativoAtualizado = { ...ativo };
+      // Inicia o modo de edição para o ativo selecionado
+      this.isEditing = ativo.id; // Armazena o ID do ativo que está sendo editado
+      this.ativoOriginal = { ...ativo }; // Armazena os dados originais do ativo
+      this.ativoAtualizado = { ...ativo }; // Prepara os dados do ativo para edição
     },
 
-    // Função para salvar as mudanças
-    saveEdit() {
+    async saveEdit() {
+      // Salva as edições feitas no ativo
       if (this.ativoAtualizado.id) {
-        this.editAtivo({
-          id: this.ativoAtualizado.id,
-          ativoAtualizado: { ...this.ativoAtualizado }
+        await this.editAtivo({
+          id: this.ativoAtualizado.id, // ID do ativo que está sendo editado
+          ativoAtualizado: { 
+            nome: this.ativoAtualizado.nome,
+            tipo: this.ativoAtualizado.tipo,
+            valor: this.ativoAtualizado.valor
+          }
         });
-        
-        this.isEditing = false;
-        this.ativoAtualizado = { id: null, nome: '', tipo: '', valor: 0 };
-        emitter.emit('ativoAtualizado'); // Emite o evento de atualização de ativo
+
+        this.isEditing = null; // Reseta o ID do ativo que está sendo editado
+        this.ativoAtualizado = { id: null, nome: '', tipo: '', valor: 0 }; // Reseta o objeto de ativo atualizado
+        this.ativoOriginal = null; // Limpa os dados originais
+        this.updateChart(); // Atualiza o gráfico de investimentos
       }
     },
 
-
-    // Função para cancelar a edição
     cancelEdit() {
-      this.isEditing = false;
-      this.ativoAtualizado = { id: null, nome: '', tipo: '', valor: 0 };
+      // Cancela o modo de edição e restaura os dados originais
+      this.isEditing = null; // Reseta o ID do ativo que está sendo editado
+      this.ativoAtualizado = { ...this.ativoOriginal }; // Restaura os dados originais do ativo
+      this.ativoOriginal = null; // Limpa os dados originais
     },
 
-    // Função de confirmação de exclusão
     confirmDelete(id) {
+      // Confirma a exclusão do ativo
       if (confirm("Tem certeza que deseja deletar este ativo?")) {
-        this.deleteAtivo(id);
-        emitter.emit('ativoAtualizado'); // Emite o evento de atualização de ativo
+        this.deleteAtivo(id); // Executa a ação de deletar o ativo
+        this.updateChart(); // Atualiza o gráfico após a exclusão
+      }
+    },
+
+    updateChart() {
+      // Atualiza o gráfico de investimentos
+      if (this.$refs.chart) {
+        this.$refs.chart.updateChart(); // Chama o método de atualização do componente gráfico
       }
     }
   },
   created() {
-    emitter.on('ativoAdicionado', this.onAtivoAdicionado);
+    // Registra um evento para atualizar o gráfico quando um ativo é atualizado
+    emitter.on('ativoAtualizado', this.updateChart);
   },
-  
   beforeUnmount() {
-    emitter.off('ativoAdicionado', this.onAtivoAdicionado);
+    // Remove o evento registrado ao desmontar o componente
+    emitter.off('ativoAtualizado', this.updateChart);
   }
 };
 </script>

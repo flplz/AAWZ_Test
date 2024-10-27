@@ -1,15 +1,24 @@
 
 import { createApp } from 'vue'
-//import { createPinia } from 'pinia'
-import './assets/style.css' // importa arquivo 
+import './assets/style.css' 
 
-import App from './App.vue'
-import router from './router'
-import store from './stores/store'
-const app = createApp(App)
+// Importa o componente principal do aplicativo
+import App from './App.vue';
 
-//app.use(createPinia())
-app.use(store)
-app.use(router)
+// Importa o roteador configurado para gerenciar as rotas do aplicativo
+import router from './router';
 
-app.mount('#app')
+// Importa a loja Vuex para gerenciar o estado global do aplicativo
+import store from './stores/store';
+
+// Cria uma nova instância do aplicativo Vue passando o componente App como argumento
+const app = createApp(App);
+
+// Adiciona o store (gerenciamento de estado) à instância do aplicativo
+app.use(store);
+
+// Adiciona o router (gerenciamento de rotas) à instância do aplicativo
+app.use(router);
+
+// Monta a instância do aplicativo no elemento HTML com o ID 'app'
+app.mount('#app');
